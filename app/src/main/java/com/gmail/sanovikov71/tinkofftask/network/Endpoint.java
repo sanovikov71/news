@@ -1,7 +1,7 @@
 package com.gmail.sanovikov71.tinkofftask.network;
 
-import com.gmail.sanovikov71.tinkofftask.network.model.details.DetailsResponse;
-import com.gmail.sanovikov71.tinkofftask.network.model.list.NewsResponse;
+import com.gmail.sanovikov71.tinkofftask.network.model.DetailsResponse;
+import com.gmail.sanovikov71.tinkofftask.network.model.NewsResponse;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

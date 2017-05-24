@@ -10,20 +10,23 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.Menu;
 
 import com.gmail.sanovikov71.tinkofftask.R;
 import com.gmail.sanovikov71.tinkofftask.network.DataManager;
-import com.gmail.sanovikov71.tinkofftask.network.model.list.NewsItem;
+import com.gmail.sanovikov71.tinkofftask.network.model.NewsItem;
+import com.gmail.sanovikov71.tinkofftask.network.model.PublicationDate;
+import com.gmail.sanovikov71.tinkofftask.storage.NewsProvider;
 import com.gmail.sanovikov71.tinkofftask.storage.NewsTable;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class NewsActivity extends AppCompatActivity implements UIList, LoaderManager.LoaderCallbacks<Cursor> {
+public class NewsActivity extends AppCompatActivity implements UIList,
+        LoaderManager.LoaderCallbacks<Cursor> {
+
+    private static final int LIST_LOADER_ID = 25;
 
     private NewsAdapter mAdapter;
-
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
     @Override
@@ -52,17 +55,13 @@ public class NewsActivity extends AppCompatActivity implements UIList, LoaderMan
         });
 
         dataManager.fetchList(this);
+
+        getSupportLoaderManager().initLoader(LIST_LOADER_ID, null, this);
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        return true;
-    }
-
-    @Override
-    public void update(List<NewsItem> list) {
+    public void update() {
         mSwipeRefreshLayout.setRefreshing(false);
-//        mAdapter.updateDataset(list);
     }
 
     @Override
@@ -72,29 +71,29 @@ public class NewsActivity extends AppCompatActivity implements UIList, LoaderMan
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(this);
+        return new CursorLoader(
+                this,
+                NewsProvider.NEWS_CONTENT_URI,
+                null,
+                null,
+                null,
+                null
+        );
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         List<NewsItem> dataList = new ArrayList<>();
 
-        try {
-            while (data.moveToNext()) {
-                final int id = data.getInt(data.getColumnIndex(NewsTable.COLUMN_ID));
-                final String text = data.getString(data.getColumnIndex(NewsTable.COLUMN_TEXT));
-                final String content = data.getString(data.getColumnIndex(NewsTable.COLUMN_CONTENT));
-            }
-        } finally {
-            data.close();
+        while (data.moveToNext()) {
+            final int id = data.getInt(data.getColumnIndex(NewsTable.COLUMN_BACKEND_ID));
+            final String text = data.getString(data.getColumnIndex(NewsTable.COLUMN_TEXT));
+            final String content = data.getString(data.getColumnIndex(NewsTable.COLUMN_CONTENT));
+            final long milliseconds
+                    = data.getLong(data.getColumnIndex(NewsTable.COLUMN_PUBLICATION_DATE));
+            dataList.add(new NewsItem(id, text, content, new PublicationDate(milliseconds)));
         }
 
-
-        for (int i = 0; i < data.getCount(); i++) {
-            dataList.add(new NewsItem(data.get);
-
-
-        }
         mAdapter.updateDataset(dataList);
     }
 

@@ -1,4 +1,4 @@
-package com.gmail.sanovikov71.tinkofftask.network.model.list;
+package com.gmail.sanovikov71.tinkofftask.network.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

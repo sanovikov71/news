@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.gmail.sanovikov71.tinkofftask.R;
 import com.gmail.sanovikov71.tinkofftask.Utils;
-import com.gmail.sanovikov71.tinkofftask.network.model.list.NewsItem;
+import com.gmail.sanovikov71.tinkofftask.network.model.NewsItem;
 import com.gmail.sanovikov71.tinkofftask.ui.details.NewsDetailsActivity;
 
 import java.util.ArrayList;
@@ -29,19 +29,6 @@ class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     void updateDataset(List<NewsItem> data) {
         mData = data;
-        Collections.sort(mData, new Comparator<NewsItem>() {
-            @Override
-            public int compare(NewsItem o1, NewsItem o2) {
-                long diff = o2.getPublicationDate().getMilliseconds()
-                        - o1.getPublicationDate().getMilliseconds();
-                if (diff < 0) {
-                    return -1;
-                } else if (diff > 0) {
-                    return 1;
-                }
-                return 0;
-            }
-        });
         notifyDataSetChanged();
     }
 
@@ -57,9 +44,6 @@ class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         ViewHolder typedHolder = (ViewHolder) holder;
 
         NewsItem item = mData.get(position);
-//        Glide.with(mContext)
-//                .load(item.getImgUrl())
-//                .into(typedHolder.mImage);
 
         typedHolder.mItemId = item.getId();
         typedHolder.mText.setText(Utils.fromHtml(item.getText()));

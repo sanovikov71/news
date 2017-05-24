@@ -3,9 +3,9 @@ package com.gmail.sanovikov71.tinkofftask.network;
 import android.content.ContentValues;
 import android.content.Context;
 
-import com.gmail.sanovikov71.tinkofftask.network.model.details.DetailsResponse;
-import com.gmail.sanovikov71.tinkofftask.network.model.list.NewsItem;
-import com.gmail.sanovikov71.tinkofftask.network.model.list.NewsResponse;
+import com.gmail.sanovikov71.tinkofftask.network.model.DetailsResponse;
+import com.gmail.sanovikov71.tinkofftask.network.model.NewsItem;
+import com.gmail.sanovikov71.tinkofftask.network.model.NewsResponse;
 import com.gmail.sanovikov71.tinkofftask.storage.NewsProvider;
 import com.gmail.sanovikov71.tinkofftask.storage.NewsTable;
 import com.gmail.sanovikov71.tinkofftask.ui.details.UIDetails;
@@ -43,29 +43,30 @@ public class DataManager {
                 final NewsResponse body = response.body();
                 if (response.isSuccessful()) {
                     final List<NewsItem> newsItemList = body.getNewsItemList();
-                    uiList.update(newsItemList);
+                    uiList.update();
+
                     ContentValues[] cvs = new ContentValues[newsItemList.size()];
                     for (int i = 0; i < cvs.length; i++) {
                         final ContentValues contentValues = new ContentValues();
                         final NewsItem newsItem = newsItemList.get(i);
 
-                        contentValues.put(NewsTable.COLUMN_ID, newsItem.getId());
+                        contentValues.put(NewsTable.COLUMN_BACKEND_ID, newsItem.getId());
                         contentValues.put(NewsTable.COLUMN_TEXT, newsItem.getText());
                         contentValues.put(NewsTable.COLUMN_CONTENT, newsItem.getContent());
+                        contentValues.put(NewsTable.COLUMN_PUBLICATION_DATE,
+                                newsItem.getPublicationDate().getMilliseconds());
 
                         cvs[i] = contentValues;
                     }
                     context.getContentResolver().bulkInsert(NewsProvider.NEWS_CONTENT_URI, cvs);
                 } else {
                     uiList.error();
-//                    ItemStorage.getInstance().setList(new ArrayList<NewsItem>());
                 }
             }
 
             @Override
             public void onFailure(Call<NewsResponse> call, Throwable t) {
                 uiList.error();
-//                ItemStorage.getInstance().setList(new ArrayList<NewsItem>());
             }
 
         });
@@ -75,22 +76,31 @@ public class DataManager {
         server.fetchNewsItem(id).enqueue(new Callback<DetailsResponse>() {
             @Override
             public void onResponse(Call<DetailsResponse> call, Response<DetailsResponse> response) {
-                System.out.println("Novikov receiver response mItemId - " + id);
                 final DetailsResponse body = response.body();
                 if (response.isSuccessful()) {
-                    uiDetails.update(body.getNewsDetails());
-//                    ItemStorage.getInstance().setList(body);
+                    final NewsItem newsDetails = body.getNewsDetails();
+                    uiDetails.update(newsDetails);
+
+                    final ContentValues contentValues = new ContentValues();
+                    contentValues.put(NewsTable.COLUMN_BACKEND_ID, newsDetails.getId());
+                    contentValues.put(NewsTable.COLUMN_TEXT, newsDetails.getText());
+                    contentValues.put(NewsTable.COLUMN_CONTENT, newsDetails.getContent());
+
+                    context.getContentResolver().update(
+                            NewsProvider.NEWS_CONTENT_URI,
+                            contentValues,
+                            NewsTable.COLUMN_BACKEND_ID + " = " + newsDetails.getId(),
+                            null
+                    );
+
                 } else {
                     uiDetails.error();
-//                    ItemStorage.getInstance().setList(new ArrayList<NewsItem>());
                 }
             }
 
             @Override
             public void onFailure(Call<DetailsResponse> call, Throwable t) {
-                System.out.println("Novikov receiver error mItemId - " + t);
                 uiDetails.error();
-//                ItemStorage.getInstance().setList(new ArrayList<NewsItem>());
             }
 
         });

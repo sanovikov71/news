@@ -1,4 +1,4 @@
-package com.gmail.sanovikov71.tinkofftask.network.model.list;
+package com.gmail.sanovikov71.tinkofftask.network.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -20,9 +20,19 @@ public class NewsItem {
     @SerializedName("publicationDate")
     @Expose
     private PublicationDate publicationDate;
+    @SerializedName("title")
+    @Expose
+    private Title title;
+
+    public NewsItem(int id, String text, String content, PublicationDate publicationDate) {
+        this.id = id;
+        this.text = text;
+        this.content = content;
+        this.publicationDate = publicationDate;
+    }
 
     public Integer getId() {
-        return id;
+        return id != null ? id : title.getId();
     }
 
     public void setId(Integer id) {

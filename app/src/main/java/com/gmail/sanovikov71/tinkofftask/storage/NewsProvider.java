@@ -1,7 +1,6 @@
 package com.gmail.sanovikov71.tinkofftask.storage;
 
 import android.content.ContentProvider;
-import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
@@ -13,7 +12,7 @@ import android.support.annotation.Nullable;
 
 public class NewsProvider extends ContentProvider {
 
-    static final String AUTHORITY = "com.gmail.sanovikov71.tinkofftask.newsprovider";
+    static final String AUTHORITY = "com.gmail.sanovikov71.tinkofftask";
 
     static final String NEWS_PATH = "news";
 
@@ -47,7 +46,7 @@ public class NewsProvider extends ContentProvider {
 
     @Nullable
     @Override
-    public String getType(Uri uri) {
+    public String getType(@NonNull Uri uri) {
         switch (URI_MATCHER.match(uri)) {
             case URI_ALL_NEWS:
                 return NEWS_CONTENT_TYPE;
@@ -59,7 +58,11 @@ public class NewsProvider extends ContentProvider {
 
     @Nullable
     @Override
-    public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
+    public Cursor query(@NonNull Uri uri,
+                        @Nullable String[] projection,
+                        @Nullable String selection,
+                        @Nullable String[] selectionArgs,
+                        @Nullable String sortOrder) {
         SQLiteDatabase db = databaseHelper.getReadableDatabase();
         SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
 
@@ -83,7 +86,7 @@ public class NewsProvider extends ContentProvider {
                 selectionArgs,
                 null,
                 null,
-                sortOrder);
+                NewsTable.COLUMN_PUBLICATION_DATE + " DESC");
 
         cursor.setNotificationUri(getContext().getContentResolver(), NEWS_CONTENT_URI);
 
@@ -93,17 +96,7 @@ public class NewsProvider extends ContentProvider {
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
-        if (URI_MATCHER.match(uri) != URI_ALL_NEWS) {
-            throw new IllegalArgumentException("Debug Wrong URI: " + uri);
-        }
-
-        SQLiteDatabase db = databaseHelper.getWritableDatabase();
-        long rowID = db.insert(NewsTable.TABLE_NEWS, null, values);
-        Uri resultUri = ContentUris.withAppendedId(NEWS_CONTENT_URI, rowID);
-
-        getContext().getContentResolver().notifyChange(resultUri, null);
-
-        return resultUri;
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -113,7 +106,42 @@ public class NewsProvider extends ContentProvider {
 
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
-        throw new UnsupportedOperationException();
+        SQLiteDatabase db = databaseHelper.getWritableDatabase();
+        int cnt = db.updateWithOnConflict(
+                NewsTable.TABLE_NEWS,
+                values,
+                selection,
+                selectionArgs,
+                SQLiteDatabase.CONFLICT_REPLACE
+        );
+
+        getContext().getContentResolver().notifyChange(uri, null);
+
+        return cnt;
     }
 
+    @Override
+    public int bulkInsert(@NonNull Uri uri, @NonNull ContentValues[] values) {
+        int numInserted = 0;
+
+        SQLiteDatabase db = databaseHelper.getWritableDatabase();
+        db.beginTransaction();
+        try {
+            for (ContentValues cv : values) {
+                db.insertWithOnConflict(
+                        NewsTable.TABLE_NEWS,
+                        null,
+                        cv,
+                        SQLiteDatabase.CONFLICT_REPLACE
+                );
+            }
+            db.setTransactionSuccessful();
+            getContext().getContentResolver().notifyChange(uri, null);
+            numInserted = values.length;
+        } finally {
+            db.endTransaction();
+        }
+
+        return numInserted;
+    }
 }

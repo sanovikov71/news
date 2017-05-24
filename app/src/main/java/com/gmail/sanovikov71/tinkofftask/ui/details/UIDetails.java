@@ -1,9 +1,9 @@
 package com.gmail.sanovikov71.tinkofftask.ui.details;
 
-import com.gmail.sanovikov71.tinkofftask.network.model.details.DetailedNewsItem;
+import com.gmail.sanovikov71.tinkofftask.network.model.NewsItem;
 
 public interface UIDetails {
-    void update(DetailedNewsItem item);
+    void update(NewsItem item);
 
     void error();
 }
