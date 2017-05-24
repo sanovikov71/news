@@ -27,6 +27,8 @@
                 android:value=".ui.list.NewsActivity"/>
         </activity>
 
+        <service android:name=".network.DataManager"/>
+
         <provider
             android:name=".storage.NewsProvider"
             android:authorities="com.gmail.sanovikov71.tinkofftask"

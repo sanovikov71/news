@@ -14,8 +14,6 @@ import com.gmail.sanovikov71.tinkofftask.network.model.NewsItem;
 import com.gmail.sanovikov71.tinkofftask.ui.details.NewsDetailsActivity;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -73,7 +71,6 @@ class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 public void onClick(View v) {
                     Intent intent = new Intent(context, NewsDetailsActivity.class);
                     intent.putExtra(NewsDetailsActivity.EXTRA_ITEM_ID, mItemId);
-                    System.out.println("Novikov sender mItemId - " + mItemId);
                     context.startActivity(intent);
                 }
             });

@@ -3,4 +3,6 @@
           style="@style/TextAppearance.AppCompat.Body1"
           xmlns:android="http://schemas.android.com/apk/res/android"
           android:layout_width="match_parent"
-          android:layout_height="48dp"/>
+          android:layout_height="@dimen/list_item_height"
+          android:ellipsize="end"
+          android:maxLines="2"/>

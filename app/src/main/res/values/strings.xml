@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">TinkoffTask</string>
+    <string name="app_name">Новости</string>
+    <string name="network_error_message">Нет связи с сервером новостей. Проверьте подключение к интернету.</string>
+    <string name="no_data_available">Здесь будет отображен список новостей. Проверьте подключение к интернету.</string>
 </resources>

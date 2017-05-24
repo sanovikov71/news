@@ -96,12 +96,13 @@ public class NewsProvider extends ContentProvider {
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Insert is not implemented for news provider. "
+                + "Bulk insert is used.");
     }
 
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Delete is not implemented for news provider.");
     }
 
     @Override
@@ -132,7 +133,7 @@ public class NewsProvider extends ContentProvider {
                         NewsTable.TABLE_NEWS,
                         null,
                         cv,
-                        SQLiteDatabase.CONFLICT_REPLACE
+                        SQLiteDatabase.CONFLICT_IGNORE
                 );
             }
             db.setTransactionSuccessful();

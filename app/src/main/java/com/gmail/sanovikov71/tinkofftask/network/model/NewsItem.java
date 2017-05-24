@@ -8,9 +8,6 @@ public class NewsItem {
     @SerializedName("id")
     @Expose
     private Integer id;
-    @SerializedName("name")
-    @Expose
-    private String name;
     @SerializedName("text")
     @Expose
     private String text;
@@ -39,16 +36,8 @@ public class NewsItem {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getText() {
-        return text;
+        return text != null ? text : title.getText();
     }
 
     public void setText(String text) {
